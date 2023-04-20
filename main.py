@@ -22,18 +22,16 @@ app = FastAPI()
 #Models
 
 class UserBase(BaseModel):
-    pass
-
-class UserLogin(UserBase):
-    pass
-
-class User(UserBase):
     user_id: UUID = Field(...) #Universal Unit Identifier. Es una clase especial de Python que permite permite ponerle un identificador único a cada usuario cada vez que nosotros queramos en a app.permite ponerle un identificador único a cada usuario cada vez que nosotros queramos en a app.
     email: EmailStr = Field(...)
+
+class UserLogin(UserBase):
     password: str = Field(
         ...,
         min_length=8
     )
+
+class User(UserBase):
     first_name: str = Field(
         ...,
         min_length=1,
