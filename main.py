@@ -2,7 +2,7 @@
 from uuid import UUID
 from datetime import date
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 #Uvicorn
 import uvicorn
@@ -58,7 +58,7 @@ class Tweet(BaseModel):
     by: User = Field(...)
 
 
-
+#Path Operations
 
 @app.get(
     "/", 
@@ -72,6 +72,70 @@ def home():
         _type_: _description_
     """
     return {"api":"twitter"}
+
+##Users
+
+@app.post(
+    "/signup",
+    response_model=User,
+    status_code=status.HTTP_201_CREATED,
+    tags=["Users"],
+    summary="Register a User"
+)
+def signup():
+    pass
+
+@app.post(
+    "/login",
+    response_model=User,
+    status_code=status.HTTP_200_OK,
+    tags=["Users"],
+    summary="Login a User"
+)
+def login():
+    pass
+
+@app.get(
+    "/users",
+    response_model=List[User],
+    status_code=status.HTTP_200_OK,
+    tags=["Users"],
+    summary="Show all Users"
+)
+def show_all_users():
+    pass
+
+@app.get(
+    "/users/{user_id}",
+    response_model=User,
+    status_code=status.HTTP_200_OK,
+    tags=["Users"],
+    summary="Show a Users"
+)
+def show_a_user():
+    pass
+
+@app.delete(
+    "/users/{user_id}/delete",
+    response_model=User,
+    status_code=status.HTTP_200_OK,
+    tags=["Users"],
+    summary="Delete a User"
+)
+def delete_a_user():
+    pass
+
+@app.put(
+    "/users/{user_id}/update",
+    response_model=User,
+    status_code=status.HTTP_200_OK,
+    tags=["Users"],
+    summary="Update a User"
+)
+def update_a_user():
+    pass
+
+##Tweets
 
 
 
