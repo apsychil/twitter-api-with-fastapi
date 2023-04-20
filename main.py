@@ -45,6 +45,13 @@ class User(UserBase):
         max_length=50
     )
     birthday: Optional[date] = Field(default=None)  
+    
+class UserRegister(User):
+    password: str = Field(
+        ...,
+        min_length=8,
+        max_length=64
+    )
      
 class Tweet(BaseModel):
     tweet_id: UUID = Field(...)
@@ -71,6 +78,22 @@ class Tweet(BaseModel):
     summary="Register a User"
 )
 def signup():
+    """
+    Sign Up a User:
+    
+    This path operation registers a user in the app.
+    
+    Parameters:
+        -Request body parameter
+            - user: UserRegister
+            
+    Returns: A JSON with the basic user information:
+        - user_id: UUID
+        - email: EmailStr
+        - first_name: str
+        - last_name: str
+        - birth_date: str
+    """
     pass
 
 ### Login el usuario
@@ -139,7 +162,7 @@ def update_a_user():
     tags=["Tweets"],
     summary="Show all tweets")
 def home():
-    return {"api":"twitter"}
+    return {"API de Twitter":"Funciona!"}
 
 ### Show a tweet
 @app.get(
@@ -181,7 +204,7 @@ def delete_a_tweet():
 def update_a_tweet():
     pass
 
-#Main
+#Main para que se ejecute el servidor de uvicorn
 
 if __name__ == "__main__":
     uvicorn.run(
