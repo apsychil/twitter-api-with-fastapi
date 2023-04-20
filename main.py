@@ -1,4 +1,5 @@
 #Python
+import json
 from uuid import UUID
 from datetime import date
 from datetime import datetime
@@ -10,6 +11,7 @@ import uvicorn
 #FastAPI
 from fastapi import FastAPI
 from fastapi import status
+from fastapi import Body
 
 #Pydantic
 from pydantic import BaseModel
@@ -44,7 +46,7 @@ class User(UserBase):
         min_length=1,
         max_length=50
     )
-    birthday: Optional[date] = Field(default=None)  
+    birth_date: Optional[date] = Field(default=None)  
     
 class UserRegister(User):
     password: str = Field(
@@ -60,8 +62,8 @@ class Tweet(BaseModel):
         min_length=1,
         max_length=256
     )
-    created_at: date = Field(default=datetime.now())
-    update_at: Optional[date] = Field(default=None)
+    created_at: datetime = Field(default=datetime.now())
+    updated_at: Optional[datetime] = Field(default=None)
     by: User = Field(...)
 
 
@@ -77,7 +79,7 @@ class Tweet(BaseModel):
     tags=["Users"],
     summary="Register a User"
 )
-def signup():
+def signup(user: UserRegister = Body(...)):
     """
     Sign Up a User:
     
@@ -94,7 +96,16 @@ def signup():
         - last_name: str
         - birth_date: str
     """
-    pass
+    with open("users.json", "r+", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        user_dict = user.dict()
+        user_dict["user_id"] = str(user_dict["user_id"])
+        user_dict["birth_date"] = str(user_dict["birth_date"])
+        results.append(user_dict)
+        f.seek(0)
+        f.write(json.dumps(results))
+        return user
+        
 
 ### Login el usuario
 @app.post(
@@ -116,8 +127,21 @@ def login():
     summary="Show all Users"
 )
 def show_all_users():
-    pass
+    """This path operation shows all users in the app
 
+    Returns:
+        JSON: JSON list with all users in the app, with the following keys:
+            - user_id: UUID
+            - email: EmailStr
+            - first_name: str
+            - last_name: str
+            - birth_date: str 
+    """
+    with open("users.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        return results
+    
+    
 ### Muestra un usuario
 @app.get(
     "/users/{user_id}",
@@ -181,8 +205,33 @@ def show_a_tweet():
     status_code=status.HTTP_201_CREATED,
     tags=["Tweets"],
     summary="Post a tweet")
-def post_a_tweet():
-    pass
+def post_a_tweet(tweet: Tweet = Body(...)):
+    """This path operation post a tweet in the app
+
+    Args:
+        tweet (Tweet): content of the tweet in str.
+
+    Returns:
+        json: json list with the basic tweet information, with the following keys:
+            - tweet_id: UUID
+            - content: str
+            - created_at: datetime
+            - updated_at: Optional[datetime]
+            - by: User
+    """
+    with open("tweets.json", "r+", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        tweet_dict = tweet.dict()
+        tweet_dict["tweet_id"] = str(tweet_dict["tweet_id"])
+        tweet_dict["created_at"] = str(tweet_dict["created_at"])
+        tweet_dict["updated_at"] = str(tweet_dict["updated_at"])
+        tweet_dict["by"]["user_id"] = str(tweet_dict["by"]["user_id"]) 
+        tweet_dict["by"]["birth_date"] = str(tweet_dict["by"]["birth_date"])
+        
+        results.append(tweet_dict)
+        f.seek(0)
+        f.write(json.dumps(results))
+        return tweet
 
 ### Delete a tweet
 @app.delete(
