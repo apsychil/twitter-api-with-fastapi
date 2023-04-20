@@ -12,6 +12,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi import status
 from fastapi import Body
+from fastapi import Form
 
 #Pydantic
 from pydantic import BaseModel
@@ -66,6 +67,9 @@ class Tweet(BaseModel):
     updated_at: Optional[datetime] = Field(default=None)
     by: User = Field(...)
 
+class LoginOut(BaseModel):
+    email: EmailStr = Field(...)
+    message: str = Field(default="Login successfully!")
 
 # Path Operations
 
@@ -115,8 +119,25 @@ def signup(user: UserRegister = Body(...)):
     tags=["Users"],
     summary="Login a User"
 )
-def login():
-    pass
+def login(email: EmailStr = Form(...), password: str = Form(...)):
+    """This path operation logins a person in the app
+
+    Args:
+        email (EmailStr): Email del usuario. Defaults to Form(...).
+        password (str): Contraseña del usuario. Defaults to Form(...).
+
+    Returns:
+        LoginOut: Devuelve el usuario y un mensaje
+    """
+    with open("users.json", "r+", encoding="utf-8") as f:
+        datos = json.loads(f.read())
+        for user in datos:
+            if email == user['email'] and password == user['password']:
+                return LoginOut(email=email)
+            else:
+                return LoginOut(email=email, message="Login Unsuccessfully!")
+
+
 
 ### Muestra todos los usuarios
 @app.get(
@@ -186,7 +207,20 @@ def update_a_user():
     tags=["Tweets"],
     summary="Show all tweets")
 def home():
-    return {"API de Twitter":"Funciona!"}
+    """This path operation shows all the tweets in the app
+
+    Returns:
+        JSON: JSON list with all the tweets in the app, with the following keys:
+            - tweet_id: UUID
+            - content: Estr
+            - created_at: datetime
+            - updated_at: Optional[datetime]
+            - by: User 
+    """
+    with open("tweets.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        return results
+    
 
 ### Show a tweet
 @app.get(
