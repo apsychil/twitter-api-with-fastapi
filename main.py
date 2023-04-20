@@ -58,23 +58,11 @@ class Tweet(BaseModel):
     by: User = Field(...)
 
 
-#Path Operations
+# Path Operations
 
-@app.get(
-    "/", 
-    status_code=status.HTTP_200_OK,
-    tags=["Home"],
-    summary="Home")
-def home():
-    """_summary_
+## Users
 
-    Returns:
-        _type_: _description_
-    """
-    return {"api":"twitter"}
-
-##Users
-
+### Registrar el usuario
 @app.post(
     "/signup",
     response_model=User,
@@ -85,6 +73,7 @@ def home():
 def signup():
     pass
 
+### Login el usuario
 @app.post(
     "/login",
     response_model=User,
@@ -95,6 +84,7 @@ def signup():
 def login():
     pass
 
+### Muestra todos los usuarios
 @app.get(
     "/users",
     response_model=List[User],
@@ -105,6 +95,7 @@ def login():
 def show_all_users():
     pass
 
+### Muestra un usuario
 @app.get(
     "/users/{user_id}",
     response_model=User,
@@ -115,6 +106,7 @@ def show_all_users():
 def show_a_user():
     pass
 
+### Borra un usuario
 @app.delete(
     "/users/{user_id}/delete",
     response_model=User,
@@ -125,6 +117,7 @@ def show_a_user():
 def delete_a_user():
     pass
 
+### Actualiza un usuario
 @app.put(
     "/users/{user_id}/update",
     response_model=User,
@@ -135,9 +128,60 @@ def delete_a_user():
 def update_a_user():
     pass
 
-##Tweets
 
+## Tweets
 
+### Show all tweets
+@app.get(
+    "/",
+    response_model=List[Tweet], 
+    status_code=status.HTTP_200_OK,
+    tags=["Tweets"],
+    summary="Show all tweets")
+def home():
+    return {"api":"twitter"}
+
+### Show a tweet
+@app.get(
+    "/tweets/{tweet_id}",
+    response_model=Tweet, 
+    status_code=status.HTTP_200_OK,
+    tags=["Tweets"],
+    summary="Show a tweet")
+def show_a_tweet():
+    pass
+
+### Post a tweet
+@app.post(
+    "/post",
+    response_model=Tweet, 
+    status_code=status.HTTP_201_CREATED,
+    tags=["Tweets"],
+    summary="Post a tweet")
+def post_a_tweet():
+    pass
+
+### Delete a tweet
+@app.delete(
+    "/tweets/{tweet_id}/delete",
+    response_model=Tweet, 
+    status_code=status.HTTP_200_OK,
+    tags=["Tweets"],
+    summary="Delete a tweet")
+def delete_a_tweet():
+    pass
+
+### Update a tweet
+@app.put(
+    "/tweets/{tweet_id}/update",
+    response_model=Tweet, 
+    status_code=status.HTTP_200_OK,
+    tags=["Tweets"],
+    summary="Update a tweet")
+def update_a_tweet():
+    pass
+
+#Main
 
 if __name__ == "__main__":
     uvicorn.run(
